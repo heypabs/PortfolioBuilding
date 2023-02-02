@@ -63,12 +63,13 @@ JOIN dbo.VAX
 ON dbo.DEATHZ.[location] = dbo.VAX.[location]
 AND dbo.DEATHZ.[date] = dbo.VAX.[date];
 
---Looking at Total Population VS Vaccines 
+-- Looking at Total Population and Vaccines INFO
 
-SELECT DEATHZ.continent, DEATHZ.[location], DEATHZ.date, DEATHZ.population, VAX.new_vaccinations
+SELECT DEATHZ.continent, DEATHZ.[location], DEATHZ.date, DEATHZ.population, VAX.new_vaccinations,
+SUM(VAX.new_vaccinations) OVER (PARTITION by DEATHZ.LOCATION ORDER BY DEATHZ.LOCATION, DEATHZ.DATE) AS 'Rolling Vaccinations'
 FROM dbo.DEATHZ
-JOIN dbo.VAX
-ON DEATHZ.[location] = VAX.[location]
-AND DEATHZ.[date] = VAX.[date]
+    JOIN dbo.VAX
+        ON dbo.DEATHZ.[location] = dbo.VAX.[location]
+        AND dbo.DEATHZ.[date] = dbo.VAX.[date]
 WHERE DEATHZ.continent IS NOT NULL
 ORDER BY 2,3;
