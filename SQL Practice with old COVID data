@@ -1,1 +1,9 @@
 
+SELECT DEATHZ.continent, DEATHZ.[location], DEATHZ.date, DEATHZ.population, VAX.new_vaccinations,
+SUM(VAX.new_vaccinations)
+FROM dbo.DEATHZ
+JOIN dbo.VAX
+ON DEATHZ.[location] = VAX.[location]
+AND DEATHZ.[date] = VAX.[date]
+WHERE DEATHZ.continent IS NOT NULL
+ORDER BY 2,3;
