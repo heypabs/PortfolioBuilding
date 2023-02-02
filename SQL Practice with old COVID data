@@ -1,6 +1,71 @@
+/* Practice SQL statements for COVID Tableau Project */ 
 
-SELECT DEATHZ.continent, DEATHZ.[location], DEATHZ.date, DEATHZ.population, VAX.new_vaccinations,
-SUM(VAX.new_vaccinations)
+
+SELECT * FROM dbo.deathz
+order by 3,4;
+
+SELECT * FROM dbo.vax
+order by 3,4;
+
+SELECT location, date, total_cases, new_cases, total_deaths, population
+FROM dbo.DEATHZ
+order by 1,2;
+
+-- Looking at total cases vs total deaths (likelihood of dying if contracting covid in by country)
+
+SELECT location, date, total_cases, total_deaths, (total_deaths/total_cases)*100 AS DeathPercentage
+FROM dbo.DEATHZ
+order by 1,2;
+
+-- Total cases vs population
+
+SELECT location, date, Population, total_cases, (total_cases/population)*100 AS ContractionPercentage
+FROM dbo.DEATHZ
+WHERE location LIKE '%states%'
+order by 1,2;
+
+--Showing countries with highest contraction rates
+
+SELECT location, Population, MAX(total_cases) AS HighestContraction, MAX((total_cases/population))*100 AS ContractionPercentage
+FROM dbo.DEATHZ
+GROUP BY population, location
+order by 4 DESC;
+
+--Showing countries with highest death count
+
+SELECT location, MAX(total_deaths) AS TotalDeathCount 
+FROM dbo.DEATHZ
+WHERE continent IS NOT NULL
+GROUP BY location
+ORDER BY 2 DESC;
+
+--Breakdown by continent
+
+SELECT continent, MAX(total_deaths) AS TotalDeathCount 
+FROM dbo.DEATHZ
+WHERE continent IS NOT NULL
+GROUP BY continent
+ORDER BY 2 DESC;
+
+-- Global comparisons
+
+SELECT date, SUM(new_cases) AS 'Global New Cases', SUM(new_deaths) AS 'Global New Deaths', SUM(new_deaths)/SUM(new_cases)*100 AS 'Global Death Percentage'
+FROM dbo.DEATHZ
+WHERE continent IS NOT NULL
+GROUP BY date
+ORDER BY 1; 
+
+--Join Practice
+
+SELECT * 
+FROM dbo.DEATHZ
+JOIN dbo.VAX
+ON dbo.DEATHZ.[location] = dbo.VAX.[location]
+AND dbo.DEATHZ.[date] = dbo.VAX.[date];
+
+--Looking at Total Population VS Vaccines 
+
+SELECT DEATHZ.continent, DEATHZ.[location], DEATHZ.date, DEATHZ.population, VAX.new_vaccinations
 FROM dbo.DEATHZ
 JOIN dbo.VAX
 ON DEATHZ.[location] = VAX.[location]
